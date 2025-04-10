@@ -31,3 +31,17 @@ PicoBricks is an all-in-one educational development board designed for learning 
 1. Clone this repository or download it as a ZIP file:
    ```bash
    https://github.com/Robotistan/PicoBricks-for-RPico
+
+2. Move or extract the folder to your Arduino libraries directory:
+   - **Windows:** `Documents/Arduino/libraries`
+   - **macOS/Linux:** `~/Arduino/libraries`
+
+3. Restart the Arduino IDE.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
