@@ -1,4 +1,4 @@
-#⚠️ You must choose Raspberry Pico W board for PicoBricks library. ⚠️
+⚠️ You must choose Raspberry Pico W board for PicoBricks library. ⚠️
 
 # PicoBricks Library for Raspberry Pi Pico
 
