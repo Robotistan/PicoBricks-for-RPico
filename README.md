@@ -1,5 +1,6 @@
-
 # PicoBricks Library for Raspberry Pi Pico
+
+⚠️ You must choose Raspberry Pico W board for PicoBricks library.
 
 Official Arduino library for controlling the [PicoBricks](https://www.picobricks.com) development platform using Raspberry Pi Pico.
 
