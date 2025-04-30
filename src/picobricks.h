@@ -11,21 +11,21 @@
 #include "ws2812.pio.h"        // Custom PIO program for NeoPixel (WS2812)
 
 //------------------IR Remote Key Definitions--------------------
-#define number_1 69
-#define number_2 70
-#define number_3 71
-#define number_4 68
-#define number_5 64
-#define number_6 67
-#define number_7 7
-#define number_8 21
-#define number_9 9
-#define number_0 25
-#define button_up 24
-#define button_down 82
-#define button_right 90
-#define button_left 8
-#define button_ok 28
+#define number_1 0xA2
+#define number_2 0x62
+#define number_3 0xE2
+#define number_4 0x22
+#define number_5 0x02
+#define number_6 0xC2
+#define number_7 0xE0
+#define number_8 0xA8
+#define number_9 0x90
+#define number_0 0x98
+#define button_up 0x18
+#define button_down 0x4A
+#define button_right 0x5A
+#define button_left 0x10
+#define button_ok 0x38
 
 /******************************
  SSD1306 OLED DISPLAY CLASS
@@ -50,6 +50,21 @@ private:
     void sendData(uint8_t data);                              // Send data to OLED
     void drawChar(int16_t x, int16_t y, unsigned char c);     // Draw single character
     void drawPixel(uint8_t x, uint8_t y, bool color);         // Draw a pixel
+};
+
+/******************************
+ Ir Reciever
+*******************************/
+class IRPico {
+public:
+    IRPico(uint8_t recv_pin);
+    bool decode();
+    uint32_t getCode();
+private:
+    uint8_t recvPin;
+    uint32_t receivedCode;
+    bool receivedFlag;
+    uint32_t waitForState(bool state, uint32_t timeout_us);
 };
 
 /******************************
