@@ -148,6 +148,77 @@ void SSD1306::drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, uint8_t w,
 }
 
 /*****************************
+IR LIBRARY
+******************************/
+// Constructor: Initialize the IR receiver pin
+IRPico::IRPico(uint8_t recv_pin) {
+    recvPin = recv_pin;
+    pinMode(recvPin, INPUT_PULLUP); // Set pin as input with internal pull-up resistor
+    receivedCode = 0;
+    receivedFlag = false;
+}
+
+// Wait for the specified pin state (HIGH or LOW) within a given timeout (microseconds)
+uint32_t IRPico::waitForState(bool state, uint32_t timeout_us) {
+    uint32_t start = micros();
+    while (digitalRead(recvPin) != state) {
+        if ((micros() - start) > timeout_us) {
+            return 0; // Timeout occurred
+        }
+    }
+    return micros() - start; // Return how long it took
+}
+
+// Decode an incoming NEC signal
+bool IRPico::decode() {
+    // Wait for the start signal (should be LOW)
+    if (waitForState(LOW, 10000) == 0) return false;
+
+    // Wait for 9ms LOW (start burst)
+    uint32_t lowTime = waitForState(HIGH, 15000);
+    if (lowTime < 8000 || lowTime > 10000) {
+        return false; // Incorrect start LOW timing
+    }
+
+    // Wait for 4.5ms HIGH (space after start)
+    uint32_t highTime = waitForState(LOW, 8000);
+    if (highTime < 4000 || highTime > 5000) {
+        return false; // Incorrect start HIGH timing
+    }
+
+    // Start receiving 32 bits of data
+    receivedCode = 0;
+    for (int i = 0; i < 32; i++) {
+        // Wait for LOW (560us expected)
+        if (waitForState(HIGH, 1000) == 0) return false;
+
+        // Measure the length of HIGH signal
+        uint32_t t = waitForState(LOW, 3000);
+        if (t == 0) return false;
+
+        if (t > 1000) {
+            // If HIGH is longer than 1ms, it's a logical '1'
+            receivedCode = (receivedCode << 1) | 1;
+        } else {
+            // Otherwise, it's a logical '0'
+            receivedCode = (receivedCode << 1);
+        }
+    }
+
+    receivedFlag = true; // Mark that a valid code was received
+    return true;
+}
+
+// Get the received command (extracts the 8-bit command from the 32-bit NEC frame)
+uint32_t IRPico::getCode() {
+    if (receivedFlag) {
+        receivedFlag = false; // Clear the flag
+        return (receivedCode >> 8) & 0xFF; // Extract and return the command byte
+    }
+    return 0; // No new code received
+}
+
+/*****************************
 ServoSimple LIBRARY
 ******************************/
 ServoSimple::ServoSimple(uint gpio_pin)
